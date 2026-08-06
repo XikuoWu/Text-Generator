@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fancy Text Generator</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="shortcut icon" href="favicon.png" type="image/x-icon">
+</head>
+
+<body>
+  <main class="page">
+    <header class="intro">
+      <p class="eyebrow">Unicode character substitution · Copy &amp; paste anywhere</p>
+      <h1>Fancy text generator</h1>
+      <p class="lede">
+        Type some text below and get 30 "fancy font" versions instantly. These are
+        real Unicode characters, not images or CSS effects, so they keep their look
+        when pasted into any text field, chat box, or social media bio.
+      </p>
+    </header>
+
+    <div class="input-card">
+      <label for="inputText" class="input-label">Your text</label>
+      <input id="inputText" type="text" maxlength="200" placeholder="Type something…" value="Hello World"
+        autocomplete="off" />
+      <p class="input-hint" id="charCount">0 / 200 characters</p>
+    </div>
+
+    <section class="specimens" id="specimenList" aria-label="Generated fancy text styles"></section>
+
+    <footer class="notes">
+      <h2>About color, outlines, and shadows</h2>
+      <p>
+        A plain text field can only hold plain text — it has no way to store color,
+        outlines, or shadow effects. That's a limitation of every text input, not
+        this tool. The styles below keep their look anywhere because each one is a
+        distinct set of Unicode characters, not styled letters. Only Latin letters
+        and numbers convert; other scripts (Chinese, Cyrillic, etc.) pass through
+        unchanged. If you need color or shadow effects, that has to be an image
+        instead of editable text.
+      </p>
+    </footer>
+  </main>
+  <script src="script.js"></script>
+</body>
+
+</html>

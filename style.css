@@ -1,0 +1,223 @@
+:root {
+  --paper: #faf9f5;
+  --ink: #1a1a18;
+  --ink-soft: #55524a;
+  --line: #dedad0;
+  --accent: #2b5d4c;
+  --accent-soft: #e4ede9;
+  --mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  --serif: Georgia, 'Iowan Old Style', 'Times New Roman', serif;
+  --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+.page {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 56px 24px 80px;
+}
+
+.intro {
+  margin-bottom: 36px;
+}
+
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin: 0 0 12px;
+}
+
+.intro h1 {
+  font-family: var(--serif);
+  font-size: 40px;
+  font-weight: 400;
+  margin: 0 0 16px;
+  letter-spacing: -0.01em;
+}
+
+.lede {
+  font-size: 15px;
+  color: var(--ink-soft);
+  max-width: 58ch;
+  margin: 0;
+}
+
+.input-card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 20px 24px;
+  margin-bottom: 40px;
+}
+
+.input-label {
+  display: block;
+  font-size: 12px;
+  font-family: var(--mono);
+  color: var(--ink-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 10px;
+}
+
+#inputText {
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid var(--line);
+  padding: 8px 0 12px;
+  font-size: 22px;
+  font-family: var(--serif);
+  color: var(--ink);
+  background: transparent;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+#inputText:focus {
+  border-bottom-color: var(--accent);
+}
+
+.input-hint {
+  margin: 10px 0 0;
+  font-size: 12px;
+  font-family: var(--mono);
+  color: var(--ink-soft);
+  text-align: right;
+}
+
+.specimens {
+  display: flex;
+  flex-direction: column;
+}
+
+.specimen {
+  display: grid;
+  grid-template-columns: 36px 1fr auto;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 4px;
+  border-top: 1px solid var(--line);
+}
+
+.specimen:last-child {
+  border-bottom: 1px solid var(--line);
+}
+
+.specimen-index {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--ink-soft);
+}
+
+.specimen-body {
+  min-width: 0;
+}
+
+.specimen-label {
+  font-size: 11px;
+  font-family: var(--mono);
+  color: var(--ink-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 4px;
+}
+
+.specimen-output {
+  font-size: 20px;
+  word-break: break-word;
+  margin: 0;
+  color: var(--ink);
+}
+
+.copy-btn {
+  font-family: var(--sans);
+  font-size: 13px;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border: none;
+  border-radius: 6px;
+  padding: 8px 14px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.copy-btn:hover {
+  background: #d7e5df;
+}
+
+.copy-btn:active {
+  transform: scale(0.97);
+}
+
+.copy-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.copy-btn.copied {
+  background: var(--accent);
+  color: #fff;
+}
+
+.notes {
+  margin-top: 56px;
+  padding-top: 28px;
+  border-top: 1px solid var(--line);
+}
+
+.notes h2 {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: 20px;
+  margin: 0 0 12px;
+}
+
+.notes p {
+  font-size: 14px;
+  color: var(--ink-soft);
+  max-width: 62ch;
+  margin: 0;
+}
+
+@media (max-width: 520px) {
+  .page {
+    padding: 40px 18px 60px;
+  }
+  .intro h1 {
+    font-size: 32px;
+  }
+  .specimen {
+    grid-template-columns: 28px 1fr;
+  }
+  .copy-btn {
+    grid-column: 1 / -1;
+    justify-self: start;
+    margin-top: 4px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}
