@@ -1,14 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fancy Text Generator</title>
-  <link rel="stylesheet" href="style.css">
-  <link rel="shortcut icon" href="favicon.png" type="image/x-icon">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fancy Text Generator</title>
+<link rel="stylesheet" href="style.css">
 </head>
-
 <body>
   <main class="page">
     <header class="intro">
@@ -23,9 +20,36 @@
 
     <div class="input-card">
       <label for="inputText" class="input-label">Your text</label>
-      <input id="inputText" type="text" maxlength="200" placeholder="Type something…" value="Hello World"
-        autocomplete="off" />
+      <input
+        id="inputText"
+        type="text"
+        maxlength="200"
+        placeholder="Type something…"
+        value="Hello World"
+        autocomplete="off"
+      />
       <p class="input-hint" id="charCount">0 / 200 characters</p>
+      <div class="display-controls">
+        <div class="control-group" role="group" aria-label="Output font size">
+          <span class="control-label">Size</span>
+          <button type="button" class="stepper-btn" id="sizeDown" aria-label="Decrease font size">–</button>
+          <span class="control-value" id="sizeValue">20px</span>
+          <button type="button" class="stepper-btn" id="sizeUp" aria-label="Increase font size">+</button>
+        </div>
+        <div class="control-group" role="group" aria-label="Output font weight">
+          <span class="control-label">Weight</span>
+          <button type="button" class="stepper-btn" id="weightDown" aria-label="Decrease font weight">–</button>
+          <span class="control-value" id="weightValue">400</span>
+          <button type="button" class="stepper-btn" id="weightUp" aria-label="Increase font weight">+</button>
+        </div>
+        <div class="control-group" role="group" aria-label="Output text color">
+          <span class="control-label">Color</span>
+          <div class="segmented">
+            <button type="button" class="segmented-btn" id="colorBlack" aria-pressed="true">Black</button>
+            <button type="button" class="segmented-btn" id="colorWhite" aria-pressed="false">White</button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <section class="specimens" id="specimenList" aria-label="Generated fancy text styles"></section>
@@ -45,5 +69,4 @@
   </main>
   <script src="script.js"></script>
 </body>
-
 </html>

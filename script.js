@@ -232,6 +232,14 @@
   var inputEl = document.getElementById('inputText');
   var listEl = document.getElementById('specimenList');
   var charCountEl = document.getElementById('charCount');
+  var sizeDownEl = document.getElementById('sizeDown');
+  var sizeUpEl = document.getElementById('sizeUp');
+  var sizeValueEl = document.getElementById('sizeValue');
+  var weightDownEl = document.getElementById('weightDown');
+  var weightUpEl = document.getElementById('weightUp');
+  var weightValueEl = document.getElementById('weightValue');
+  var colorBlackEl = document.getElementById('colorBlack');
+  var colorWhiteEl = document.getElementById('colorWhite');
 
   function render() {
     var text = inputEl.value || '';
@@ -315,6 +323,58 @@
       fallback();
     }
   }
+
+  // ---- Output font size / weight controls ----
+  // These only visibly change styles built from ordinary Latin letters
+  // (Reversed, Upside down, Wide spaced, Flag letters, Underline,
+  // Strikethrough, and plain passthrough characters like digits/spaces).
+  // The fancy alphabet styles (Bold, Script, Fraktur, etc.) are separate
+  // Unicode glyphs baked at a fixed weight, so most fonts won't render a
+  // heavier or lighter version of them — size still scales those normally.
+  var SIZE_MIN = 14, SIZE_MAX = 40, SIZE_STEP = 2, SIZE_DEFAULT = 20;
+  var WEIGHT_MIN = 100, WEIGHT_MAX = 900, WEIGHT_STEP = 100, WEIGHT_DEFAULT = 400;
+  var currentSize = SIZE_DEFAULT;
+  var currentWeight = WEIGHT_DEFAULT;
+
+  function setSize(px) {
+    currentSize = Math.min(SIZE_MAX, Math.max(SIZE_MIN, px));
+    listEl.style.setProperty('--specimen-size', currentSize + 'px');
+    sizeValueEl.textContent = currentSize + 'px';
+    sizeDownEl.disabled = currentSize <= SIZE_MIN;
+    sizeUpEl.disabled = currentSize >= SIZE_MAX;
+  }
+
+  function setWeight(w) {
+    currentWeight = Math.min(WEIGHT_MAX, Math.max(WEIGHT_MIN, w));
+    listEl.style.setProperty('--specimen-weight', currentWeight);
+    weightValueEl.textContent = String(currentWeight);
+    weightDownEl.disabled = currentWeight <= WEIGHT_MIN;
+    weightUpEl.disabled = currentWeight >= WEIGHT_MAX;
+  }
+
+  sizeDownEl.addEventListener('click', function () { setSize(currentSize - SIZE_STEP); });
+  sizeUpEl.addEventListener('click', function () { setSize(currentSize + SIZE_STEP); });
+  weightDownEl.addEventListener('click', function () { setWeight(currentWeight - WEIGHT_STEP); });
+  weightUpEl.addEventListener('click', function () { setWeight(currentWeight + WEIGHT_STEP); });
+
+  // Plain text can't carry color once it's pasted elsewhere (see the note
+  // at the bottom of the page) — this only changes how it looks in this
+  // preview. Switching to White also darkens the card behind it, since
+  // white-on-white would otherwise be invisible.
+  function setColor(color) {
+    var isWhite = color === 'white';
+    listEl.style.setProperty('--specimen-color', isWhite ? 'var(--paper)' : 'var(--ink)');
+    listEl.classList.toggle('dark-preview', isWhite);
+    colorWhiteEl.setAttribute('aria-pressed', String(isWhite));
+    colorBlackEl.setAttribute('aria-pressed', String(!isWhite));
+  }
+
+  colorBlackEl.addEventListener('click', function () { setColor('black'); });
+  colorWhiteEl.addEventListener('click', function () { setColor('white'); });
+
+  setSize(SIZE_DEFAULT);
+  setWeight(WEIGHT_DEFAULT);
+  setColor('black');
 
   inputEl.addEventListener('input', render);
   render();
