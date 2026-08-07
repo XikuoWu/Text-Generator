@@ -144,6 +144,18 @@
     '+': '\u208A', '-': '\u208B', '=': '\u208C', '(': '\u208D', ')': '\u208E'
   };
 
+  // "Currency" is a novelty cipher, not a real Unicode alphabet block — each
+  // letter is swapped for a currency sign or letter-with-stroke that looks
+  // roughly similar. One glyph covers both cases, same as Small caps.
+  // Digits have no currency equivalent, so they pass through unchanged.
+  var currencySource = {
+    a: '\u20B3', b: '\u0243', c: '\u20B5', d: '\u0110', e: '\u0246', f: '\u20A3',
+    g: '\u20B2', h: '\u0126', i: '\u0197', j: '\u0248', k: '\u20AD', l: '\u20A4',
+    m: '\u20A5', n: '\u20A6', o: '\u00D8', p: '\u20B1', q: '\u024A', r: '\u211E',
+    s: '\u0024', t: '\u20AE', u: '\u0244', v: '\u2205', w: '\u20A9', x: '\u2717',
+    y: '\u00A5', z: '\u01B5'
+  };
+
   // Combining marks used for "cursed" (zalgo) text — a mix of above, below,
   // and mid-strike combining diacritics stacked in random combinations.
   var zalgoUp = ['\u030d', '\u030e', '\u0304', '\u0305', '\u033f', '\u0311', '\u0306', '\u0310', '\u0352', '\u0357', '\u0351', '\u0307', '\u0308', '\u030a', '\u0342', '\u0343', '\u0344', '\u034a', '\u034b', '\u034c', '\u0303', '\u0302', '\u030c', '\u0350', '\u0300', '\u0301', '\u030b', '\u030f', '\u0312'];
@@ -171,6 +183,17 @@
 
   function toWideSpaced(str) {
     return Array.from(str).join(' ');
+  }
+
+  // These two don't substitute individual letters — they wrap the whole
+  // string, so (unlike every other style here) they work on any script,
+  // not just Latin letters and digits.
+  function toBracketed(str) {
+    return '\u300E' + str + '\u300F';
+  }
+
+  function toSparkle(str) {
+    return '\u2726 ' + str + ' \u2726';
   }
 
   // Two Regional Indicator Symbols placed next to each other render as a
@@ -218,6 +241,7 @@
     { name: 'Squared filled', convert: function (s) { return applyMap(s, squaredFilledMap); } },
     { name: 'Parenthesized', convert: function (s) { return applyMap(s, parenthesizedMap); } },
     { name: 'Flag letters', convert: toFlags },
+    { name: 'Currency', convert: function (s) { return applyCaseInsensitiveMap(s, currencySource); } },
     { name: 'Small caps', convert: function (s) { return applyCaseInsensitiveMap(s, smallCapsSource); } },
     { name: 'Superscript', convert: function (s) { return applyMap(s, superscriptMap); } },
     { name: 'Subscript', convert: function (s) { return applyMap(s, subscriptMap); } },
@@ -226,6 +250,8 @@
     { name: 'Upside down', convert: toUpsideDown },
     { name: 'Reversed', convert: toReversed },
     { name: 'Wide spaced', convert: toWideSpaced },
+    { name: 'Bracketed', convert: toBracketed },
+    { name: 'Sparkle', convert: toSparkle },
     { name: 'Cursed (zalgo)', convert: toZalgo }
   ];
 
@@ -243,7 +269,7 @@
 
   function render() {
     var text = inputEl.value || '';
-    charCountEl.textContent = text.length + ' / 200 characters';
+    charCountEl.textContent = text.length + (text.length === 1 ? ' character' : ' characters');
     listEl.innerHTML = '';
 
     STYLES.forEach(function (style, idx) {
@@ -376,6 +402,14 @@
   setWeight(WEIGHT_DEFAULT);
   setColor('black');
 
-  inputEl.addEventListener('input', render);
+  // No length cap now, so a large paste shouldn't trigger a full re-render
+  // (33 styles' worth of conversion) on every keystroke while still typing.
+  var renderTimer = null;
+  function scheduleRender() {
+    clearTimeout(renderTimer);
+    renderTimer = setTimeout(render, 120);
+  }
+
+  inputEl.addEventListener('input', scheduleRender);
   render();
 })();
