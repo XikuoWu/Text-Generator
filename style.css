@@ -104,121 +104,9 @@ body {
   text-align: right;
 }
 
-.display-controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  margin-top: 16px;
-  padding-top: 16px;
-  border-top: 1px solid var(--line);
-}
-
-.control-group {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.control-label {
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--ink-soft);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-
-.control-value {
-  font-family: var(--mono);
-  font-size: 12px;
-  color: var(--ink);
-  min-width: 34px;
-  text-align: center;
-}
-
-.stepper-btn {
-  width: 26px;
-  height: 26px;
-  line-height: 1;
-  font-family: var(--sans);
-  font-size: 15px;
-  color: var(--accent);
-  background: var(--accent-soft);
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.15s ease, transform 0.1s ease;
-}
-
-.stepper-btn:hover:not(:disabled) {
-  background: #d7e5df;
-}
-
-.stepper-btn:active:not(:disabled) {
-  transform: scale(0.94);
-}
-
-.stepper-btn:disabled {
-  opacity: 0.35;
-  cursor: default;
-}
-
-.segmented {
-  display: inline-flex;
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  overflow: hidden;
-}
-
-.segmented-btn {
-  font-family: var(--sans);
-  font-size: 12px;
-  padding: 5px 12px;
-  border: none;
-  background: #fff;
-  color: var(--ink-soft);
-  cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease;
-}
-
-.segmented-btn + .segmented-btn {
-  border-left: 1px solid var(--line);
-}
-
-.segmented-btn:hover:not([aria-pressed="true"]) {
-  background: var(--accent-soft);
-}
-
-.segmented-btn[aria-pressed="true"] {
-  background: var(--accent);
-  color: #fff;
-}
-
 .specimens {
   display: flex;
   flex-direction: column;
-}
-
-.specimens.dark-preview {
-  background: var(--ink);
-  border-radius: 10px;
-  padding: 4px 20px;
-  transition: background 0.15s ease;
-}
-
-.specimens.dark-preview .specimen {
-  border-top-color: rgba(255, 255, 255, 0.14);
-}
-
-.specimens.dark-preview .specimen:last-child {
-  border-bottom-color: rgba(255, 255, 255, 0.14);
-}
-
-.specimens.dark-preview .specimen-index,
-.specimens.dark-preview .specimen-label {
-  color: rgba(255, 255, 255, 0.5);
 }
 
 .specimen {
@@ -254,12 +142,10 @@ body {
 }
 
 .specimen-output {
-  font-size: var(--specimen-size, 20px);
-  font-weight: var(--specimen-weight, 400);
+  font-size: 20px;
   word-break: break-word;
   margin: 0;
-  color: var(--specimen-color, var(--ink));
-  transition: font-size 0.1s ease, color 0.15s ease;
+  color: var(--ink);
 }
 
 .copy-btn {

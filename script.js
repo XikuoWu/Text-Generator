@@ -156,6 +156,27 @@
     y: '\u00A5', z: '\u01B5'
   };
 
+  // Braille Patterns block (U+2800), standard English Grade-1 letter cells.
+  // A real, complete Unicode alphabet — not a lookalike cipher.
+  var brailleSource = {
+    a: '\u2801', b: '\u2803', c: '\u2809', d: '\u2819', e: '\u2811', f: '\u280B',
+    g: '\u281B', h: '\u2813', i: '\u280A', j: '\u281A', k: '\u2805', l: '\u2807',
+    m: '\u280D', n: '\u281D', o: '\u2815', p: '\u280F', q: '\u281F', r: '\u2817',
+    s: '\u280E', t: '\u281E', u: '\u2825', v: '\u2827', w: '\u283A', x: '\u282D',
+    y: '\u283D', z: '\u2835'
+  };
+
+  // International Morse code. Letters/digits become dot-dash groups
+  // separated by spaces; a space in the input becomes a "/" word break.
+  var morseSource = {
+    a: '.-', b: '-...', c: '-.-.', d: '-..', e: '.', f: '..-.', g: '--.', h: '....',
+    i: '..', j: '.---', k: '-.-', l: '.-..', m: '--', n: '-.', o: '---', p: '.--.',
+    q: '--.-', r: '.-.', s: '...', t: '-', u: '..-', v: '...-', w: '.--', x: '-..-',
+    y: '-.--', z: '--..',
+    '0': '-----', '1': '.----', '2': '..---', '3': '...--', '4': '....-',
+    '5': '.....', '6': '-....', '7': '--...', '8': '---..', '9': '----.'
+  };
+
   // Combining marks used for "cursed" (zalgo) text — a mix of above, below,
   // and mid-strike combining diacritics stacked in random combinations.
   var zalgoUp = ['\u030d', '\u030e', '\u0304', '\u0305', '\u033f', '\u0311', '\u0306', '\u0310', '\u0352', '\u0357', '\u0351', '\u0307', '\u0308', '\u030a', '\u0342', '\u0343', '\u0344', '\u034a', '\u034b', '\u034c', '\u0303', '\u0302', '\u030c', '\u0350', '\u0300', '\u0301', '\u030b', '\u030f', '\u0312'];
@@ -194,6 +215,22 @@
 
   function toSparkle(str) {
     return '\u2726 ' + str + ' \u2726';
+  }
+
+  function toHearts(str) {
+    return '\u2665 ' + str + ' \u2665';
+  }
+
+  function toMusic(str) {
+    return '\u266A ' + str + ' \u266A';
+  }
+
+  function toMorse(str) {
+    return Array.from(str).map(function (ch) {
+      if (ch === ' ') return '/';
+      var lower = ch.toLowerCase();
+      return morseSource[lower] !== undefined ? morseSource[lower] : ch;
+    }).join(' ');
   }
 
   // Two Regional Indicator Symbols placed next to each other render as a
@@ -242,6 +279,8 @@
     { name: 'Parenthesized', convert: function (s) { return applyMap(s, parenthesizedMap); } },
     { name: 'Flag letters', convert: toFlags },
     { name: 'Currency', convert: function (s) { return applyCaseInsensitiveMap(s, currencySource); } },
+    { name: 'Braille', convert: function (s) { return applyCaseInsensitiveMap(s, brailleSource); } },
+    { name: 'Morse code', convert: toMorse },
     { name: 'Small caps', convert: function (s) { return applyCaseInsensitiveMap(s, smallCapsSource); } },
     { name: 'Superscript', convert: function (s) { return applyMap(s, superscriptMap); } },
     { name: 'Subscript', convert: function (s) { return applyMap(s, subscriptMap); } },
@@ -252,20 +291,14 @@
     { name: 'Wide spaced', convert: toWideSpaced },
     { name: 'Bracketed', convert: toBracketed },
     { name: 'Sparkle', convert: toSparkle },
+    { name: 'Hearts', convert: toHearts },
+    { name: 'Music', convert: toMusic },
     { name: 'Cursed (zalgo)', convert: toZalgo }
   ];
 
   var inputEl = document.getElementById('inputText');
   var listEl = document.getElementById('specimenList');
   var charCountEl = document.getElementById('charCount');
-  var sizeDownEl = document.getElementById('sizeDown');
-  var sizeUpEl = document.getElementById('sizeUp');
-  var sizeValueEl = document.getElementById('sizeValue');
-  var weightDownEl = document.getElementById('weightDown');
-  var weightUpEl = document.getElementById('weightUp');
-  var weightValueEl = document.getElementById('weightValue');
-  var colorBlackEl = document.getElementById('colorBlack');
-  var colorWhiteEl = document.getElementById('colorWhite');
 
   function render() {
     var text = inputEl.value || '';
@@ -350,60 +383,8 @@
     }
   }
 
-  // ---- Output font size / weight controls ----
-  // These only visibly change styles built from ordinary Latin letters
-  // (Reversed, Upside down, Wide spaced, Flag letters, Underline,
-  // Strikethrough, and plain passthrough characters like digits/spaces).
-  // The fancy alphabet styles (Bold, Script, Fraktur, etc.) are separate
-  // Unicode glyphs baked at a fixed weight, so most fonts won't render a
-  // heavier or lighter version of them — size still scales those normally.
-  var SIZE_MIN = 14, SIZE_MAX = 40, SIZE_STEP = 2, SIZE_DEFAULT = 20;
-  var WEIGHT_MIN = 100, WEIGHT_MAX = 900, WEIGHT_STEP = 100, WEIGHT_DEFAULT = 400;
-  var currentSize = SIZE_DEFAULT;
-  var currentWeight = WEIGHT_DEFAULT;
-
-  function setSize(px) {
-    currentSize = Math.min(SIZE_MAX, Math.max(SIZE_MIN, px));
-    listEl.style.setProperty('--specimen-size', currentSize + 'px');
-    sizeValueEl.textContent = currentSize + 'px';
-    sizeDownEl.disabled = currentSize <= SIZE_MIN;
-    sizeUpEl.disabled = currentSize >= SIZE_MAX;
-  }
-
-  function setWeight(w) {
-    currentWeight = Math.min(WEIGHT_MAX, Math.max(WEIGHT_MIN, w));
-    listEl.style.setProperty('--specimen-weight', currentWeight);
-    weightValueEl.textContent = String(currentWeight);
-    weightDownEl.disabled = currentWeight <= WEIGHT_MIN;
-    weightUpEl.disabled = currentWeight >= WEIGHT_MAX;
-  }
-
-  sizeDownEl.addEventListener('click', function () { setSize(currentSize - SIZE_STEP); });
-  sizeUpEl.addEventListener('click', function () { setSize(currentSize + SIZE_STEP); });
-  weightDownEl.addEventListener('click', function () { setWeight(currentWeight - WEIGHT_STEP); });
-  weightUpEl.addEventListener('click', function () { setWeight(currentWeight + WEIGHT_STEP); });
-
-  // Plain text can't carry color once it's pasted elsewhere (see the note
-  // at the bottom of the page) — this only changes how it looks in this
-  // preview. Switching to White also darkens the card behind it, since
-  // white-on-white would otherwise be invisible.
-  function setColor(color) {
-    var isWhite = color === 'white';
-    listEl.style.setProperty('--specimen-color', isWhite ? 'var(--paper)' : 'var(--ink)');
-    listEl.classList.toggle('dark-preview', isWhite);
-    colorWhiteEl.setAttribute('aria-pressed', String(isWhite));
-    colorBlackEl.setAttribute('aria-pressed', String(!isWhite));
-  }
-
-  colorBlackEl.addEventListener('click', function () { setColor('black'); });
-  colorWhiteEl.addEventListener('click', function () { setColor('white'); });
-
-  setSize(SIZE_DEFAULT);
-  setWeight(WEIGHT_DEFAULT);
-  setColor('black');
-
   // No length cap now, so a large paste shouldn't trigger a full re-render
-  // (33 styles' worth of conversion) on every keystroke while still typing.
+  // (many styles' worth of conversion) on every keystroke while still typing.
   var renderTimer = null;
   function scheduleRender() {
     clearTimeout(renderTimer);
