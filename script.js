@@ -122,6 +122,14 @@
     '<': '>', '>': '<', '&': '\u214B', '_': '\u203E'
   };
 
+  // Most letters have no true horizontal-mirror glyph in Unicode, so this
+  // only swaps the handful that do (b/d and p/q are already true mirrors of
+  // each other; c, e, r have real reversed-letter characters) and leaves
+  // everything else as-is rather than guessing at a lookalike.
+  var mirrorSource = {
+    b: 'd', d: 'b', p: 'q', q: 'p', c: '\u0254', e: '\u0258', r: '\u027F'
+  };
+
   var superscriptMap = {
     a: '\u1D43', b: '\u1D47', c: '\u1D9C', d: '\u1D48', e: '\u1D49', f: '\u1DA0',
     g: '\u1D4D', h: '\u02B0', i: '\u2071', j: '\u02B2', k: '\u1D4F', l: '\u02E1',
@@ -190,10 +198,41 @@
     return Array.from(str).map(function (ch) { return ch + '\u0332'; }).join('');
   }
 
+  function toDoubleUnderline(str) {
+    return Array.from(str).map(function (ch) { return ch + '\u0333'; }).join('');
+  }
+
+  function toWavyStrike(str) {
+    return Array.from(str).map(function (ch) { return ch + '\u0334'; }).join('');
+  }
+
+  // A single combining mark per letter, rather than Zalgo's random pile of
+  // several — a lighter, more legible "glitchy" look.
+  function toCorrupted(str) {
+    return Array.from(str).map(function (ch) { return ch + '\u0489'; }).join('');
+  }
+
+  // Combining Enclosing Keycap is the same mark real keycap emoji (1️⃣, #️⃣)
+  // use, so it's broadly supported. Left off spaces — a boxed blank looks
+  // like a stray empty square.
+  function toKeycap(str) {
+    return Array.from(str).map(function (ch) {
+      return ch === ' ' ? ch : ch + '\u20E3';
+    }).join('');
+  }
+
   function toUpsideDown(str) {
     var chars = Array.from(str).map(function (ch) {
       var lower = ch.toLowerCase();
       return upsideDownSource[lower] !== undefined ? upsideDownSource[lower] : ch;
+    });
+    return chars.reverse().join('');
+  }
+
+  function toMirror(str) {
+    var chars = Array.from(str).map(function (ch) {
+      var lower = ch.toLowerCase();
+      return mirrorSource[lower] !== undefined ? mirrorSource[lower] : ch;
     });
     return chars.reverse().join('');
   }
@@ -223,6 +262,18 @@
 
   function toMusic(str) {
     return '\u266A ' + str + ' \u266A';
+  }
+
+  // Unlike Bracketed above (which wraps the whole string once), this boxes
+  // every letter individually — a different, commonly-seen bracket style.
+  function toBoxedLetters(str) {
+    return Array.from(str).map(function (ch) {
+      return ch === ' ' ? ch : '\u3010' + ch + '\u3011';
+    }).join('');
+  }
+
+  function toWaves(str) {
+    return '\u224B' + Array.from(str).join('\u224B') + '\u224B';
   }
 
   function toMorse(str) {
@@ -256,6 +307,23 @@
     }).join('');
   }
 
+  // Picks a different one of the styles above for every letter, for a
+  // chaotic mixed look. Reuses the already-verified maps rather than a new
+  // lookup table, and re-shuffles on every render (like Cursed above).
+  var mashupMaps = [
+    boldMap, italicMap, boldItalicMap, scriptMap, frakturMap, doubleStruckMap,
+    sansMap, sansBoldMap, monospaceMap, fullwidthMap, circledMap, squaredMap,
+    superscriptMap, subscriptMap
+  ];
+
+  function toMashup(str) {
+    return Array.from(str).map(function (ch) {
+      if (ch === ' ') return ch;
+      var map = mashupMaps[Math.floor(Math.random() * mashupMaps.length)];
+      return map[ch] !== undefined ? map[ch] : ch;
+    }).join('');
+  }
+
   var STYLES = [
     { name: 'Bold', convert: function (s) { return applyMap(s, boldMap); } },
     { name: 'Italic', convert: function (s) { return applyMap(s, italicMap); } },
@@ -277,6 +345,8 @@
     { name: 'Squared', convert: function (s) { return applyMap(s, squaredMap); } },
     { name: 'Squared filled', convert: function (s) { return applyMap(s, squaredFilledMap); } },
     { name: 'Parenthesized', convert: function (s) { return applyMap(s, parenthesizedMap); } },
+    { name: 'Boxed letters', convert: toBoxedLetters },
+    { name: 'Keycap', convert: toKeycap },
     { name: 'Flag letters', convert: toFlags },
     { name: 'Currency', convert: function (s) { return applyCaseInsensitiveMap(s, currencySource); } },
     { name: 'Braille', convert: function (s) { return applyCaseInsensitiveMap(s, brailleSource); } },
@@ -286,14 +356,20 @@
     { name: 'Subscript', convert: function (s) { return applyMap(s, subscriptMap); } },
     { name: 'Strikethrough', convert: toStrikethrough },
     { name: 'Underline', convert: toUnderline },
+    { name: 'Double underline', convert: toDoubleUnderline },
+    { name: 'Wavy strikethrough', convert: toWavyStrike },
     { name: 'Upside down', convert: toUpsideDown },
+    { name: 'Mirror', convert: toMirror },
     { name: 'Reversed', convert: toReversed },
     { name: 'Wide spaced', convert: toWideSpaced },
+    { name: 'Waves', convert: toWaves },
     { name: 'Bracketed', convert: toBracketed },
     { name: 'Sparkle', convert: toSparkle },
     { name: 'Hearts', convert: toHearts },
     { name: 'Music', convert: toMusic },
-    { name: 'Cursed (zalgo)', convert: toZalgo }
+    { name: 'Corrupted', convert: toCorrupted },
+    { name: 'Cursed (zalgo)', convert: toZalgo },
+    { name: 'Random mashup', convert: toMashup }
   ];
 
   var inputEl = document.getElementById('inputText');
